@@ -1,3 +1,6 @@
 [submodule "midnight-sdk"]
 	path = midnight-sdk
 	url = https://github.com/midnightntwrk/midnight-sdk.git
+[submodule "midnight-docs"]
+	path = midnight-docs
+	url = https://github.com/SpyCrypto/midnight-docs.git
