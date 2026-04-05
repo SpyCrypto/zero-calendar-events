@@ -1,0 +1,59 @@
+// NFT Ticket Contract - Midnight Network
+// Mint and transfer event tickets as privacy-preserving NFTs
+
+pragma compact ^1.0;
+
+import CompactStandardLibrary;
+
+export ledger TicketRegistry {
+  ticket_count: Counter;
+  tickets: Map<Bytes<32>, Ticket>;
+  owner_tickets: Map<Bytes<32>, Vector<Bytes<32>, 50>>;
+}
+
+struct Ticket {
+  token_id: Bytes<32>;
+  event_id: Bytes<32>;
+  owner: Bytes<32>;
+  minted_at: Uint<64>;
+  is_valid: Boolean;
+  seat_number: Uint<32>;
+  metadata_hash: Bytes<32>;
+}
+
+witness ticket_owner(): Bytes<32>;
+witness event_id(): Bytes<32>;
+witness metadata_hash(): Bytes<32>;
+
+export circuit mint_ticket(event_id: Bytes<32>, metadata_hash: Bytes<32>): Bytes<32> {
+  const owner = ticket_owner();
+  const token_id = pad(32, "ticket") as Bytes<32>;
+  const seat = TicketRegistry.ticket_count.value as Uint<32>;
+  const new_ticket: Ticket = {
+    token_id,
+    event_id,
+    owner,
+    minted_at: 0 as Uint<64>,
+    is_valid: true,
+    seat_number: seat,
+    metadata_hash,
+  };
+  TicketRegistry.tickets.insert(token_id, new_ticket);
+  TicketRegistry.ticket_count.increment(1 as Uint<64>);
+  return token_id;
+}
+
+export circuit transfer_ticket(token_id: Bytes<32>, new_owner: Bytes<32>): [] {
+  const ticket = TicketRegistry.tickets.lookup(token_id);
+  const current_owner = ticket_owner();
+  assert ticket.owner == current_owner "Not ticket owner";
+  assert ticket.is_valid "Ticket is invalid";
+  const updated: Ticket = { ...ticket, owner: new_owner };
+  TicketRegistry.tickets.insert(token_id, updated);
+}
+
+export circuit invalidate_ticket(token_id: Bytes<32>): [] {
+  const ticket = TicketRegistry.tickets.lookup(token_id);
+  const updated: Ticket = { ...ticket, is_valid: false };
+  TicketRegistry.tickets.insert(token_id, updated);
+}

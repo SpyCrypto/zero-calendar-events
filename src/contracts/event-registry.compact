@@ -1,0 +1,66 @@
+// Event Registry Contract - Midnight Network
+// Stores on-chain conference listings with privacy preservation
+
+pragma compact ^1.0;
+
+import CompactStandardLibrary;
+
+export ledger EventRegistry {
+  event_count: Counter;
+  events: Map<Bytes<32>, EventListing>;
+  organizer_events: Map<Bytes<32>, Vector<Bytes<32>, 100>>;
+}
+
+struct EventListing {
+  id: Bytes<32>;
+  title_hash: Bytes<32>;
+  location_hash: Bytes<32>;
+  start_time: Uint<64>;
+  end_time: Uint<64>;
+  capacity: Uint<32>;
+  registered: Uint<32>;
+  ticket_price: Uint<64>;
+  organizer: Bytes<32>;
+  is_verified: Boolean;
+  dao_votes_for: Uint<32>;
+  dao_votes_against: Uint<32>;
+  created_at: Uint<64>;
+}
+
+witness organizer_key(): Bytes<32>;
+witness event_data(): EventListing;
+
+export circuit create_event(title_hash: Bytes<32>, location_hash: Bytes<32>, start_time: Uint<64>, end_time: Uint<64>, capacity: Uint<32>, ticket_price: Uint<64>): [] {
+  const organizer = organizer_key();
+  const event_id = pad(32, "evt") as Bytes<32>;
+  const new_event: EventListing = {
+    id: event_id,
+    title_hash,
+    location_hash,
+    start_time,
+    end_time,
+    capacity,
+    registered: 0 as Uint<32>,
+    ticket_price,
+    organizer,
+    is_verified: false,
+    dao_votes_for: 0 as Uint<32>,
+    dao_votes_against: 0 as Uint<32>,
+    created_at: start_time,
+  };
+  EventRegistry.events.insert(event_id, new_event);
+  EventRegistry.event_count.increment(1 as Uint<64>);
+}
+
+export circuit register_attendee(event_id: Bytes<32>): [] {
+  const event = EventRegistry.events.lookup(event_id);
+  assert event.registered < event.capacity "Event is full";
+  const updated: EventListing = { ...event, registered: (event.registered + 1 as Uint<32>) as Uint<32> };
+  EventRegistry.events.insert(event_id, updated);
+}
+
+export circuit verify_event(event_id: Bytes<32>): [] {
+  const event = EventRegistry.events.lookup(event_id);
+  const updated: EventListing = { ...event, is_verified: true };
+  EventRegistry.events.insert(event_id, updated);
+}

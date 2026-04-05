@@ -1,0 +1,36 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #0a0a1a;
+  --foreground: #e2e8f0;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+.gradient-border {
+  background: linear-gradient(135deg, #6467f4, #00d4ff);
+  padding: 1px;
+  border-radius: 12px;
+}
+
+.gradient-border-inner {
+  background: #0f0f2e;
+  border-radius: 11px;
+  height: 100%;
+}
+
+.neon-glow {
+  box-shadow: 0 0 20px rgba(100, 103, 244, 0.4);
+}
+
+.card-glass {
+  background: rgba(15, 15, 46, 0.8);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(100, 103, 244, 0.2);
+}
