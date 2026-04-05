@@ -1,0 +1,79 @@
+// DAO Curation Contract - Midnight Network
+// Community governance for event listings
+
+pragma compact ^1.0;
+
+import CompactStandardLibrary;
+
+export ledger DAOCuration {
+  proposal_count: Counter;
+  proposals: Map<Bytes<32>, Proposal>;
+  votes: Map<Bytes<32>, Vote>;
+  members: Map<Bytes<32>, Boolean>;
+  required_quorum: Uint<32>;
+}
+
+struct Proposal {
+  id: Bytes<32>;
+  event_id: Bytes<32>;
+  proposer: Bytes<32>;
+  description_hash: Bytes<32>;
+  votes_for: Uint<32>;
+  votes_against: Uint<32>;
+  expires_at: Uint<64>;
+  status: Uint<8>;
+}
+
+struct Vote {
+  voter: Bytes<32>;
+  proposal_id: Bytes<32>;
+  in_favor: Boolean;
+  cast_at: Uint<64>;
+}
+
+witness voter_key(): Bytes<32>;
+witness proposer_key(): Bytes<32>;
+
+export circuit create_proposal(event_id: Bytes<32>, description_hash: Bytes<32>, expires_at: Uint<64>): Bytes<32> {
+  const proposer = proposer_key();
+  assert DAOCuration.members.lookup(proposer) "Proposer is not a DAO member. Join the DAO to create proposals.";
+  const proposal_id = pad(32, "prop") as Bytes<32>;
+  const proposal: Proposal = {
+    id: proposal_id,
+    event_id,
+    proposer,
+    description_hash,
+    votes_for: 0 as Uint<32>,
+    votes_against: 0 as Uint<32>,
+    expires_at,
+    status: 0 as Uint<8>,
+  };
+  DAOCuration.proposals.insert(proposal_id, proposal);
+  DAOCuration.proposal_count.increment(1 as Uint<64>);
+  return proposal_id;
+}
+
+export circuit cast_vote(proposal_id: Bytes<32>, in_favor: Boolean): [] {
+  const voter = voter_key();
+  assert DAOCuration.members.lookup(voter) "Voter is not a DAO member. Join the DAO to participate in voting.";
+  const proposal = DAOCuration.proposals.lookup(proposal_id);
+  assert proposal.status == 0 as Uint<8> "Proposal not active";
+  const vote_key = pad(32, "vote") as Bytes<32>;
+  const vote: Vote = { voter, proposal_id, in_favor, cast_at: 0 as Uint<64> };
+  DAOCuration.votes.insert(vote_key, vote);
+  if in_favor {
+    const updated: Proposal = { ...proposal, votes_for: (proposal.votes_for + 1 as Uint<32>) as Uint<32> };
+    DAOCuration.proposals.insert(proposal_id, updated);
+  } else {
+    const updated: Proposal = { ...proposal, votes_against: (proposal.votes_against + 1 as Uint<32>) as Uint<32> };
+    DAOCuration.proposals.insert(proposal_id, updated);
+  }
+}
+
+export circuit finalize_proposal(proposal_id: Bytes<32>): [] {
+  const proposal = DAOCuration.proposals.lookup(proposal_id);
+  const passed = proposal.votes_for > proposal.votes_against;
+  const new_status = if passed { 1 as Uint<8> } else { 2 as Uint<8> };
+  const updated: Proposal = { ...proposal, status: new_status };
+  DAOCuration.proposals.insert(proposal_id, updated);
+}
