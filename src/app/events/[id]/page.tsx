@@ -4,12 +4,14 @@ import { formatDateRange, shortenAddress } from '@/lib/utils'
 import { MapPin, Calendar, Users, CheckCircle, Hash, Tag, ArrowLeft, Ticket } from 'lucide-react'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import { useParams } from 'next/navigation'
 import { WhoIsGoing } from '@/components/events/WhoIsGoing'
 import { RSVPButton } from '@/components/events/RSVPButton'
 
-export default function EventDetailPage({ params }: { params: { id: string } }) {
+export default function EventDetailPage() {
+  const { id } = useParams<{ id: string }>()
   const { events, wallet, mintTicket, tickets } = useAppStore()
-  const event = events.find(e => e.id === params.id)
+  const event = events.find(e => e.id === id)
   if (!event) return notFound()
 
   const hasTicket = tickets.some(t => t.eventId === event.id)
