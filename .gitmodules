@@ -1,0 +1,3 @@
+[submodule "midnight-sdk"]
+	path = midnight-sdk
+	url = https://github.com/midnightntwrk/midnight-sdk.git
