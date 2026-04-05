@@ -4,6 +4,8 @@ import { formatDateRange, shortenAddress } from '@/lib/utils'
 import { MapPin, Calendar, Users, CheckCircle, Hash, Tag, ArrowLeft, Ticket } from 'lucide-react'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import { WhoIsGoing } from '@/components/events/WhoIsGoing'
+import { RSVPButton } from '@/components/events/RSVPButton'
 
 export default function EventDetailPage({ params }: { params: { id: string } }) {
   const { events, wallet, mintTicket, tickets } = useAppStore()
@@ -39,7 +41,7 @@ export default function EventDetailPage({ params }: { params: { id: string } }) 
         </div>
 
         <div className="p-6 grid md:grid-cols-3 gap-6">
-          <div className="md:col-span-2 space-y-4">
+          <div className="md:col-span-2 space-y-5">
             <p className="text-slate-400 leading-relaxed">{event.description}</p>
             <div className="flex flex-wrap gap-2">
               {event.tags.map(tag => (
@@ -54,6 +56,11 @@ export default function EventDetailPage({ params }: { params: { id: string } }) 
                 <span className="font-mono text-xs truncate">Tx: {event.onChainTxHash}</span>
               </div>
             )}
+
+            {/* Who's Going — the killer feature */}
+            <div className="card-glass rounded-xl p-4">
+              <WhoIsGoing breakdown={event.whoIsGoing} />
+            </div>
           </div>
 
           <div className="space-y-4">
@@ -76,8 +83,14 @@ export default function EventDetailPage({ params }: { params: { id: string } }) 
               <div className="text-xs text-slate-600">Organizer: {shortenAddress(event.organizerAddress)}</div>
             </div>
 
-            <div className="card-glass rounded-xl p-4">
-              <div className="text-lg font-bold text-slate-200 mb-3">{event.ticketPrice === 'Free' ? 'Free Entry' : event.ticketPrice}</div>
+            {/* RSVP — wallet-based attendance signal */}
+            <div className="card-glass rounded-xl p-4 space-y-3">
+              <h3 className="text-sm font-semibold text-slate-300">RSVP</h3>
+              <RSVPButton eventId={event.id} />
+            </div>
+
+            <div className="card-glass rounded-xl p-4 space-y-3">
+              <div className="text-lg font-bold text-slate-200">{event.ticketPrice === 'Free' ? 'Free Entry' : event.ticketPrice}</div>
               {wallet.isConnected ? (
                 hasTicket ? (
                   <div className="flex items-center gap-2 text-green-400 text-sm font-medium">
@@ -90,7 +103,7 @@ export default function EventDetailPage({ params }: { params: { id: string } }) 
                   </button>
                 )
               ) : (
-                <p className="text-sm text-slate-500">Connect wallet to register</p>
+                <p className="text-sm text-slate-500">Connect wallet to mint ticket</p>
               )}
             </div>
 

@@ -8,7 +8,7 @@ interface Props {
   onSelectEvent: (event: CalendarEvent) => void
 }
 
-export default function GeoMap({ events, selectedEvent, onSelectEvent }: Props) {
+export default function GeoMap({ events, selectedEvent: _selectedEvent, onSelectEvent }: Props) {
   const mapRef = useRef<HTMLDivElement>(null)
   const mapInstanceRef = useRef<unknown>(null)
   const markersRef = useRef<unknown[]>([])
@@ -61,8 +61,6 @@ export default function GeoMap({ events, selectedEvent, onSelectEvent }: Props) 
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
-
-  void selectedEvent
 
   return <div ref={mapRef} className="w-full h-full" />
 }

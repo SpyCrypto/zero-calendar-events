@@ -43,6 +43,7 @@ export default function CreateEventPage() {
       daoVotesFor: 0,
       daoVotesAgainst: 0,
       onChainTxHash: `0x${Math.random().toString(16).slice(2)}`,
+      whoIsGoing: { builders: 0, investors: 0, lawyers: 0, speakers: 0, organizers: 1, researchers: 0, designers: 0, interested: 0 },
     }
     addEvent(newEvent)
     router.push('/events')
@@ -70,7 +71,7 @@ export default function CreateEventPage() {
       </Link>
       <div>
         <h1 className="text-3xl font-bold text-slate-100">Create Event</h1>
-        <p className="text-slate-500 mt-1">Your event will be submitted to the DAO for curation</p>
+        <p className="text-slate-500 mt-1">Your event will be published to Midnight Preview Network and submitted to the DAO for curation</p>
       </div>
       <form onSubmit={handleSubmit} className="card-glass rounded-2xl p-6 space-y-4">
         {field('Event Title', 'title', 'text', 'ZK Summit 2025...')}

@@ -39,7 +39,11 @@ export function Header() {
               </Link>
             ))}
           </nav>
-          <div className="ml-auto">
+          <div className="ml-auto flex items-center gap-3">
+            <span className="hidden sm:flex items-center gap-1.5 text-xs text-slate-600 border border-midnight-800 rounded-full px-2.5 py-1">
+              <span className="w-1.5 h-1.5 bg-neon-green rounded-full animate-pulse" />
+              Preview
+            </span>
             {wallet.isConnected ? (
               <button onClick={disconnectWallet}
                 className="flex items-center gap-2 px-4 py-2 rounded-lg bg-midnight-800 border border-midnight-600 text-sm text-slate-300 hover:border-midnight-400 transition-colors">

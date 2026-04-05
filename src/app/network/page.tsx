@@ -6,7 +6,7 @@ import { NetworkNode } from '@/lib/types'
 import { Users, Zap } from 'lucide-react'
 
 export default function NetworkPage() {
-  const { wallet } = useAppStore()
+  const {} = useAppStore()
   const svgRef = useRef<SVGSVGElement>(null)
   const [selected, setSelected] = useState<NetworkNode | null>(null)
   const [dimensions, setDimensions] = useState({ width: 800, height: 500 })
@@ -83,8 +83,6 @@ export default function NetworkPage() {
       svg.appendChild(g)
     })
   }
-
-  void wallet
 
   return (
     <div className="space-y-6">

@@ -1,3 +1,17 @@
+export type AttendeeRole = 'builder' | 'investor' | 'lawyer' | 'speaker' | 'organizer' | 'researcher' | 'designer' | 'other'
+
+/** Per-event attendance counts broken down by attendee role */
+export interface AttendeeBreakdown {
+  builders: number
+  investors: number
+  lawyers: number
+  speakers: number
+  organizers: number
+  researchers: number
+  designers: number
+  interested: number
+}
+
 export interface CalendarEvent {
   id: string
   title: string
@@ -19,6 +33,8 @@ export interface CalendarEvent {
   daoApproved: boolean
   daoVotesFor: number
   daoVotesAgainst: number
+  /** Breakdown of confirmed attendees by role — the "who's going" signal */
+  whoIsGoing: AttendeeBreakdown
 }
 
 export interface NFTTicket {
@@ -43,6 +59,8 @@ export interface AttendeeProfile {
   displayName: string
   bio: string
   avatar?: string
+  /** Self-declared role, shown in "Who's Going" breakdowns */
+  role: AttendeeRole
   joinedAt: string
   eventsAttended: number
   eventsOrganized: number
@@ -98,4 +116,16 @@ export interface WalletState {
   isConnected: boolean
   balance: string
   network: string
+}
+
+export type RSVPStatus = 'attending' | 'interested'
+
+/** An on-chain RSVP record linking a wallet address to an event */
+export interface EventRSVP {
+  eventId: string
+  attendeeAddress: string
+  status: RSVPStatus
+  role: AttendeeRole
+  txHash: string
+  timestamp: string
 }

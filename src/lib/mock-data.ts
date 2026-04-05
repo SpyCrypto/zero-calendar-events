@@ -22,6 +22,7 @@ export const MOCK_EVENTS: CalendarEvent[] = [
     daoApproved: true,
     daoVotesFor: 87,
     daoVotesAgainst: 5,
+    whoIsGoing: { builders: 187, investors: 42, lawyers: 8, speakers: 24, organizers: 6, researchers: 61, designers: 14, interested: 53 },
   },
   {
     id: 'evt-002',
@@ -44,6 +45,7 @@ export const MOCK_EVENTS: CalendarEvent[] = [
     daoApproved: true,
     daoVotesFor: 64,
     daoVotesAgainst: 12,
+    whoIsGoing: { builders: 72, investors: 61, lawyers: 19, speakers: 14, organizers: 5, researchers: 18, designers: 7, interested: 44 },
   },
   {
     id: 'evt-003',
@@ -65,6 +67,7 @@ export const MOCK_EVENTS: CalendarEvent[] = [
     daoApproved: false,
     daoVotesFor: 23,
     daoVotesAgainst: 8,
+    whoIsGoing: { builders: 71, investors: 4, lawyers: 2, speakers: 8, organizers: 3, researchers: 5, designers: 5, interested: 22 },
   },
   {
     id: 'evt-004',
@@ -87,6 +90,7 @@ export const MOCK_EVENTS: CalendarEvent[] = [
     daoApproved: true,
     daoVotesFor: 112,
     daoVotesAgainst: 3,
+    whoIsGoing: { builders: 198, investors: 11, lawyers: 3, speakers: 16, organizers: 8, researchers: 34, designers: 17, interested: 67 },
   },
   {
     id: 'evt-005',
@@ -108,6 +112,7 @@ export const MOCK_EVENTS: CalendarEvent[] = [
     daoApproved: true,
     daoVotesFor: 76,
     daoVotesAgainst: 9,
+    whoIsGoing: { builders: 43, investors: 29, lawyers: 5, speakers: 18, organizers: 7, researchers: 12, designers: 64, interested: 39 },
   },
   {
     id: 'evt-006',
@@ -129,6 +134,7 @@ export const MOCK_EVENTS: CalendarEvent[] = [
     daoApproved: true,
     daoVotesFor: 134,
     daoVotesAgainst: 21,
+    whoIsGoing: { builders: 118, investors: 143, lawyers: 47, speakers: 31, organizers: 12, researchers: 28, designers: 9, interested: 88 },
   },
 ]
 
@@ -178,6 +184,7 @@ export const MOCK_PROFILE: AttendeeProfile = {
   address: '0xDemoWallet...1234',
   displayName: 'Crypto Explorer',
   bio: 'Building privacy-first applications on Midnight. ZK enthusiast. Occasional hackathon winner.',
+  role: 'builder',
   joinedAt: '2024-01-15T00:00:00Z',
   eventsAttended: 12,
   eventsOrganized: 2,

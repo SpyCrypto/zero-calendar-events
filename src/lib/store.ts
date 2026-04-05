@@ -1,6 +1,24 @@
 import { create } from 'zustand'
-import { CalendarEvent, NFTTicket, AttendeeProfile, DAOProposal, WalletState } from './types'
+import { AttendeeBreakdown, CalendarEvent, NFTTicket, AttendeeProfile, DAOProposal, WalletState, EventRSVP, RSVPStatus, AttendeeRole } from './types'
 import { MOCK_EVENTS, MOCK_TICKETS, MOCK_PROFILE, MOCK_DAO_PROPOSALS } from './mock-data'
+
+/** Maps an AttendeeRole to its corresponding AttendeeBreakdown key */
+const ROLE_TO_BREAKDOWN_KEY: Record<AttendeeRole, keyof AttendeeBreakdown> = {
+  builder:    'builders',
+  investor:   'investors',
+  lawyer:     'lawyers',
+  speaker:    'speakers',
+  researcher: 'researchers',
+  designer:   'designers',
+  organizer:  'organizers',
+  other:      'interested',
+}
+
+/** Increments the appropriate breakdown counter for a given role */
+function incrementBreakdown(breakdown: AttendeeBreakdown, role: AttendeeRole): AttendeeBreakdown {
+  const key = ROLE_TO_BREAKDOWN_KEY[role]
+  return { ...breakdown, [key]: breakdown[key] + 1 }
+}
 
 interface AppState {
   wallet: WalletState
@@ -8,6 +26,7 @@ interface AppState {
   tickets: NFTTicket[]
   profile: AttendeeProfile | null
   proposals: DAOProposal[]
+  rsvps: EventRSVP[]
   selectedEvent: CalendarEvent | null
   filterCategory: string
   searchQuery: string
@@ -17,8 +36,11 @@ interface AppState {
   setFilterCategory: (category: string) => void
   setSearchQuery: (query: string) => void
   mintTicket: (eventId: string) => void
+  rsvpEvent: (eventId: string, status: RSVPStatus) => void
+  getRSVP: (eventId: string) => EventRSVP | undefined
   voteOnProposal: (proposalId: string, vote: 'for' | 'against') => void
   addEvent: (event: CalendarEvent) => void
+  updateProfileRole: (role: AttendeeRole) => void
 }
 
 export const useAppStore = create<AppState>((set, get) => ({
@@ -26,12 +48,13 @@ export const useAppStore = create<AppState>((set, get) => ({
     address: null,
     isConnected: false,
     balance: '0',
-    network: 'Midnight Testnet',
+    network: 'Midnight Preview',
   },
   events: MOCK_EVENTS,
   tickets: [],
   profile: null,
   proposals: MOCK_DAO_PROPOSALS,
+  rsvps: [],
   selectedEvent: null,
   filterCategory: 'All',
   searchQuery: '',
@@ -41,16 +64,17 @@ export const useAppStore = create<AppState>((set, get) => ({
       address: '0xDemoWallet...1234',
       isConnected: true,
       balance: '12.5 NIGHT',
-      network: 'Midnight Testnet',
+      network: 'Midnight Preview',
     },
     profile: MOCK_PROFILE,
     tickets: MOCK_TICKETS,
   }),
 
   disconnectWallet: () => set({
-    wallet: { address: null, isConnected: false, balance: '0', network: 'Midnight Testnet' },
+    wallet: { address: null, isConnected: false, balance: '0', network: 'Midnight Preview' },
     profile: null,
     tickets: [],
+    rsvps: [],
   }),
 
   setSelectedEvent: (event) => set({ selectedEvent: event }),
@@ -78,10 +102,50 @@ export const useAppStore = create<AppState>((set, get) => ({
       txHash: `0x${Math.random().toString(16).slice(2)}`,
       isValid: true,
     }
+    const role: AttendeeRole = get().profile?.role ?? 'other'
     set(state => ({
       tickets: [...state.tickets, newTicket],
-      events: state.events.map(e => e.id === eventId ? { ...e, registered: e.registered + 1 } : e),
+      events: state.events.map(e => {
+        if (e.id !== eventId) return e
+        return { ...e, registered: e.registered + 1, whoIsGoing: incrementBreakdown(e.whoIsGoing, role) }
+      }),
     }))
+  },
+
+  rsvpEvent: (eventId, status) => {
+    const { wallet, profile } = get()
+    if (!wallet.isConnected || !wallet.address) return
+    const existing = get().rsvps.find(r => r.eventId === eventId && r.attendeeAddress === wallet.address)
+    const role: AttendeeRole = profile?.role ?? 'other'
+    const newRSVP: EventRSVP = {
+      eventId,
+      attendeeAddress: wallet.address,
+      status,
+      role,
+      txHash: `0x${Math.random().toString(16).slice(2).padEnd(64, '0')}`,
+      timestamp: new Date().toISOString(),
+    }
+    set(state => {
+      const updatedRSVPs = existing
+        ? state.rsvps.map(r => r.eventId === eventId && r.attendeeAddress === wallet.address ? newRSVP : r)
+        : [...state.rsvps, newRSVP]
+
+      // Update whoIsGoing when this is the first RSVP for this attendee
+      const updatedEvents = state.events.map(e => {
+        if (e.id !== eventId || existing) return e
+        const updatedBreakdown = status === 'attending'
+          ? incrementBreakdown(e.whoIsGoing, role)
+          : { ...e.whoIsGoing, interested: e.whoIsGoing.interested + 1 }
+        return { ...e, whoIsGoing: updatedBreakdown }
+      })
+
+      return { rsvps: updatedRSVPs, events: updatedEvents }
+    })
+  },
+
+  getRSVP: (eventId) => {
+    const address = get().wallet.address
+    return get().rsvps.find(r => r.eventId === eventId && r.attendeeAddress === address)
   },
 
   voteOnProposal: (proposalId, vote) => {
@@ -100,4 +164,10 @@ export const useAppStore = create<AppState>((set, get) => ({
   },
 
   addEvent: (event) => set(state => ({ events: [...state.events, event] })),
+
+  updateProfileRole: (role) => {
+    set(state => ({
+      profile: state.profile ? { ...state.profile, role } : state.profile,
+    }))
+  },
 }))

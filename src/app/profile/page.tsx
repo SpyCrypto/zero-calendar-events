@@ -2,9 +2,21 @@
 import { useAppStore } from '@/lib/store'
 import { formatDate, shortenAddress } from '@/lib/utils'
 import { User, Calendar, Star, Twitter, Github } from 'lucide-react'
+import { AttendeeRole } from '@/lib/types'
+
+const ROLES: { value: AttendeeRole; label: string; emoji: string }[] = [
+  { value: 'builder',    label: 'Builder',    emoji: '🔨' },
+  { value: 'investor',   label: 'Investor',   emoji: '💰' },
+  { value: 'lawyer',     label: 'Lawyer',     emoji: '⚖️'  },
+  { value: 'speaker',    label: 'Speaker',    emoji: '🎤' },
+  { value: 'researcher', label: 'Researcher', emoji: '🔬' },
+  { value: 'designer',   label: 'Designer',   emoji: '🎨' },
+  { value: 'organizer',  label: 'Organizer',  emoji: '📋' },
+  { value: 'other',      label: 'Other',      emoji: '👤' },
+]
 
 export default function ProfilePage() {
-  const { wallet, profile, tickets, connectWallet } = useAppStore()
+  const { wallet, profile, tickets, connectWallet, updateProfileRole } = useAppStore()
 
   if (!wallet.isConnected) {
     return (
@@ -37,6 +49,26 @@ export default function ProfilePage() {
             <p className="text-xs text-slate-500 font-mono mt-1">{shortenAddress(profile.address)}</p>
           </div>
           <p className="text-sm text-slate-400 text-center">{profile.bio}</p>
+
+          {/* Role selector — feeds into "Who's Going" on RSVP */}
+          <div>
+            <p className="text-xs text-slate-500 mb-2 text-center">Your role (shown in Who&apos;s Going)</p>
+            <div className="grid grid-cols-4 gap-1">
+              {ROLES.map(r => (
+                <button key={r.value} onClick={() => updateProfileRole(r.value)}
+                  title={r.label}
+                  className={`flex flex-col items-center gap-0.5 py-2 rounded-lg text-xs transition-colors ${
+                    profile.role === r.value
+                      ? 'bg-midnight-600 text-white'
+                      : 'bg-midnight-900 text-slate-500 hover:text-slate-300 hover:bg-midnight-800'
+                  }`}>
+                  <span className="text-base">{r.emoji}</span>
+                  <span className="leading-none">{r.label}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
           <div className="grid grid-cols-2 gap-3 text-center">
             <div className="bg-midnight-900 rounded-lg p-3">
               <div className="text-xl font-bold text-midnight-300">{profile.eventsAttended}</div>
@@ -47,6 +79,7 @@ export default function ProfilePage() {
               <div className="text-xs text-slate-600">Organized</div>
             </div>
           </div>
+
           {/* Social links */}
           <div className="space-y-2">
             {profile.social.twitter && (
@@ -63,10 +96,10 @@ export default function ProfilePage() {
         </div>
 
         <div className="md:col-span-2 space-y-5">
-          {/* Badges */}
+          {/* Badges / Reputation */}
           <div className="card-glass rounded-2xl p-5">
             <h3 className="font-semibold text-slate-300 mb-4 flex items-center gap-2">
-              <Star className="w-4 h-4 text-yellow-400" /> Badges
+              <Star className="w-4 h-4 text-yellow-400" /> Reputation Badges
             </h3>
             <div className="grid grid-cols-2 gap-3">
               {profile.badges.map(badge => (
@@ -93,7 +126,7 @@ export default function ProfilePage() {
             </div>
           </div>
 
-          {/* Ticket history */}
+          {/* Ticket / event history */}
           <div className="card-glass rounded-2xl p-5">
             <h3 className="font-semibold text-slate-300 mb-3 flex items-center gap-2">
               <Calendar className="w-4 h-4 text-midnight-400" /> Event History

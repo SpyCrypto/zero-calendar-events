@@ -5,11 +5,11 @@ import Link from 'next/link'
 import { Calendar, MapPin, Ticket, Users, Vote, Zap } from 'lucide-react'
 
 const features = [
-  { icon: Calendar, label: 'On-chain Listings', href: '/events', color: 'text-midnight-400', description: 'Immutable event records on Midnight' },
-  { icon: Ticket, label: 'NFT Tickets', href: '/tickets', color: 'text-neon-blue', description: 'Mint and hold event tickets as NFTs' },
-  { icon: Users, label: 'Attendee Profiles', href: '/profile', color: 'text-neon-purple', description: 'Wallet-linked identity and history' },
-  { icon: Zap, label: 'Networking Graph', href: '/network', color: 'text-yellow-400', description: 'See who else is attending' },
-  { icon: Vote, label: 'DAO Curation', href: '/dao', color: 'text-green-400', description: 'Community-curated event listings' },
+  { icon: Calendar, label: 'Conference Calendar', href: '/events', color: 'text-midnight-400', description: 'On-chain listings — submit, filter, discover' },
+  { icon: Users, label: 'Wallet RSVP', href: '/events', color: 'text-neon-blue', description: '"I\'m attending" — signed on Midnight Preview' },
+  { icon: Zap, label: 'Who\'s Going', href: '/network', color: 'text-yellow-400', description: '23 builders · 6 investors · 2 lawyers attending' },
+  { icon: Ticket, label: 'NFT Tickets', href: '/tickets', color: 'text-neon-purple', description: 'Provably owned, wallet-held event passes' },
+  { icon: Vote, label: 'DAO Curation', href: '/dao', color: 'text-green-400', description: 'Community votes on which events get listed' },
   { icon: MapPin, label: 'Geo Discover', href: '/discover', color: 'text-red-400', description: 'Find events near you on the map' },
 ]
 
@@ -23,21 +23,26 @@ export default function Home() {
       <section className="text-center py-12">
         <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-midnight-900/60 border border-midnight-700 text-midnight-300 text-sm mb-6">
           <span className="w-2 h-2 bg-neon-green rounded-full animate-pulse" />
-          Live on Midnight Testnet
+          Live on Midnight Preview Network · <a href="https://build.1am.xyz" className="underline underline-offset-2 hover:text-midnight-200 transition-colors" target="_blank" rel="noreferrer">build.1am.xyz</a>
         </div>
         <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-midnight-300 via-neon-blue to-neon-purple bg-clip-text text-transparent mb-4">
-          Zero Calendar Events
+          Web3 Conference Hub
         </h1>
-        <p className="text-xl text-slate-400 max-w-2xl mx-auto mb-8">
-          Privacy-preserving event discovery powered by Midnight blockchain.
-          NFT tickets, on-chain listings, DAO curation — all in one place.
+        <p className="text-xl text-slate-400 max-w-2xl mx-auto mb-3">
+          Discover conferences. RSVP with your wallet. Build on-chain reputation.
         </p>
-        <div className="flex gap-4 justify-center">
+        <p className="text-sm text-slate-600 max-w-xl mx-auto mb-8">
+          Not just a calendar — network intelligence. See who&apos;s going before you buy a ticket.
+        </p>
+        <div className="flex gap-4 justify-center flex-wrap">
           <Link href="/events" className="px-6 py-3 rounded-lg bg-midnight-600 hover:bg-midnight-500 text-white font-semibold transition-colors">
-            Browse Events
+            Browse Conferences
           </Link>
           <Link href="/discover" className="px-6 py-3 rounded-lg border border-midnight-600 hover:border-midnight-400 text-slate-300 font-semibold transition-colors">
             Geo Discover
+          </Link>
+          <Link href="/profile" className="px-6 py-3 rounded-lg border border-midnight-700 hover:border-midnight-500 text-slate-400 font-semibold transition-colors">
+            Build Reputation
           </Link>
         </div>
       </section>
