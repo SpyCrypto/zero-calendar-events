@@ -185,7 +185,7 @@ export const MOCK_PROFILE: AttendeeProfile = {
   social: {
     twitter: '@cryptoexplorer',
     github: 'crypto-explorer',
-    farcaster: '!cryptoexplorer',
+    farcaster: '@cryptoexplorer',
   },
   badges: [
     { id: 'b1', name: 'Early Adopter', description: 'Joined in the first wave', icon: '🚀', earnedAt: '2024-01-15T00:00:00Z' },
