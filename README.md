@@ -1,2 +1,8 @@
 # zero-calendar-events
-Keep track of 🗓️ On-chain conference listings  🎟️ NFT tickets  👤 wallet-based attendee profiles  🤝 networking graph (who's attending)  🗳️ DAO curated events  📍 geo discover
+Keep track of 
+🗓️ On-chain conference listings  
+🎟️ NFT tickets  
+👤 wallet-based attendee profiles  
+🤝 networking graph (who's attending)  
+🗳️ DAO curated events  
+📍 geo discover
