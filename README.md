@@ -1,5 +1,5 @@
 # zero-calendar-events
-Keep track of 
+Track your:
 🗓️ On-chain conference listings  
 🎟️ NFT tickets  
 👤 wallet-based attendee profiles  
