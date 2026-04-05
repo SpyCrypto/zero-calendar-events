@@ -36,7 +36,7 @@ witness proposer_key(): Bytes<32>;
 
 export circuit create_proposal(event_id: Bytes<32>, description_hash: Bytes<32>, expires_at: Uint<64>): Bytes<32> {
   const proposer = proposer_key();
-  assert DAOCuration.members.lookup(proposer) "Not a DAO member";
+  assert DAOCuration.members.lookup(proposer) "Proposer is not a DAO member. Join the DAO to create proposals.";
   const proposal_id = pad(32, "prop") as Bytes<32>;
   const proposal: Proposal = {
     id: proposal_id,
@@ -55,7 +55,7 @@ export circuit create_proposal(event_id: Bytes<32>, description_hash: Bytes<32>,
 
 export circuit cast_vote(proposal_id: Bytes<32>, in_favor: Boolean): [] {
   const voter = voter_key();
-  assert DAOCuration.members.lookup(voter) "Not a DAO member";
+  assert DAOCuration.members.lookup(voter) "Voter is not a DAO member. Join the DAO to participate in voting.";
   const proposal = DAOCuration.proposals.lookup(proposal_id);
   assert proposal.status == 0 as Uint<8> "Proposal not active";
   const vote_key = pad(32, "vote") as Bytes<32>;
